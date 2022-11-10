@@ -1,5 +1,5 @@
 FROM debian:buster
 
-RUN	apt-get	update && apt-get install mariadb-server
+RUN	apt-get	update && apt-get install -y mariadb-server
 
 CMD ["mysql start", "daemon off;"]
