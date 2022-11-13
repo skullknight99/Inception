@@ -5,7 +5,7 @@ RUN	apt-get update && apt-get -y install apache2 php php-mysql \
 
 ADD https://wordpress.org/latest.tar.gz /tmp/latest.tar.gz
 RUN cd /tmp && tar xvf latest.tar.gz && cp -R wordpress /var/www/html/ \
-	&& chown -R www-data:www=-data /var/www/html/wordpress \
+	&& chown -R www-data:www-data /var/www/html/wordpress \
 	&& chmod -R 755 /var/www/html/wordpress/ \
 	&& mkdir /var/www/html/wordpress/wp-content/uploads \
 	&& chown -R www-data:www-data /var/www/html/wordpress/wp-content/uploads/
