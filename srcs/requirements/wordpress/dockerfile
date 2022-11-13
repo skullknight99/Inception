@@ -1,3 +1,27 @@
 FROM debian:buster
 
-RUN	apt-get update && apt-get install
+RUN	apt-get update && apt-get -y install apache2 php php-mysql \
+	&& service apache2 start
+
+ADD https://wordpress.org/latest.tar.gz /tmp/latest.tar.gz
+RUN cd /tmp && tar xvf latest.tar.gz
+RUN cp -R wordpress /var/www/html/
+RUN chown -R www-data:www=-data /var/www/html/wordpress
+RUN chmod -R 755 /var/www/html/wordpress/
+RUN mkdir /var/www/html/wordpress/wp-content/uploads
+RUN chown -R www-data:www-data /var/www/html/wordpress/wp-content/uploads/
+
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install mariadb-server \
+	&& service mysql start \
+	&& mysql < /config/conf.sql
+
+
+RUN mv /usr/share/nginx/wordpress /usr/share/nginx/www
+RUN chown -R www-data:www-data /usr/share/nginx/www
+
+COPY config/info.php var/www/html/info.php
+
+RUN service mysql restart
+
+CMD ["/bin/bash"]
