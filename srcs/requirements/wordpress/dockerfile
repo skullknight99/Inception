@@ -1,26 +1,19 @@
 FROM debian:buster
 
-RUN	apt-get update && apt-get -y install apache2 php php-mysql \
-	&& service apache2 start
+RUN apt-get update && apt-get -y install \
+	wget curl bash php php-cgi php-mysql \
+	php-fpm php-pdo php-gd php-cli \
+	php-mbstring redis php-redis \
+	&& rm -rf /var/lib/apt/lists/*
 
-ADD https://wordpress.org/latest.tar.gz /tmp/latest.tar.gz
-RUN cd /tmp && tar xvf latest.tar.gz && cp -R wordpress /var/www/html/ \
-	&& chown -R www-data:www-data /var/www/html/wordpress \
-	&& chmod -R 755 /var/www/html/wordpress/ \
-	&& mkdir /var/www/html/wordpress/wp-content/uploads \
-	&& chown -R www-data:www-data /var/www/html/wordpress/wp-content/uploads/
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+  && chmod +x wp-cli.phar \
+  && mv wp-cli.phar /usr/local/bin/wp
 
+COPY ./config/www.conf /etc/php/7.3/fpm/pool.d
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install mariadb-server \
-	&& service mysql start \
-	&& mysql < /config/conf.sql
+COPY ./config/setup.sh /usr/local/bin/
 
+EXPOSE 9000
 
-RUN mv /usr/share/nginx/wordpress /usr/share/nginx/www
-RUN chown -R www-data:www-data /usr/share/nginx/www
-
-COPY config/info.php var/www/html/info.php
-
-RUN service mysql restart
-
-CMD ["/bin/bash"]
+CMD ["bash", "/var/www/setup.sh"]
