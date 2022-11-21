@@ -16,4 +16,4 @@ COPY ./config/setup.sh /usr/local/bin/
 
 EXPOSE 9000
 
-CMD ["bash", "/var/www/setup.sh"]
+CMD ["bash", "/usr/local/bin/setup.sh"]
